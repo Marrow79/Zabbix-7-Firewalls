@@ -1,0 +1,382 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+  - uuid: 36bff6c29af64692839d077febfc7079
+    name: Templates/Network devices
+  templates:
+  - uuid: 5b5733bf5d054fa3a10671ad87066645
+    template: Fortinet FG-1100E by SNMP
+    name: Fortinet FG-1100E by SNMP
+    description: 'Zabbix 7.0 SNMP template for Fortinet FG-1100E.
+
+
+      Scope: conservative vendor-neutral SNMP baseline using SNMPv2-MIB and IF-MIB so the template remains portable across
+      firmware revisions.
+
+      Includes ICMP reachability, system identity/uptime, interface discovery, interface state, traffic, errors/discards,
+      triggers, and interface graph prototypes.
+
+      No unverified proprietary OIDs are included. Add vendor MIB-specific items only after confirming them against the exact
+      firmware/model.
+
+
+      SNMP support/model evidence:
+
+      - https://docs.fortinet.com/document/fortigate/latest/fortios-release-notes/760203/introduction-and-supported-models
+
+      - https://docs.fortinet.com/document/fortigate/7.6.4/fortios-release-notes/760203/introduction-and-supported-models
+
+
+      Vendor note:
+
+      Enable/configure the FortiGate SNMP agent and allow SNMP on the monitored management interface.'
+    groups:
+    - name: Templates/Network devices
+    items:
+    - uuid: ae35fea89dbd4d469c0a2755f05bcc9e
+      name: ICMP ping
+      type: SIMPLE
+      key: icmpping
+      delay: 1m
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: health
+      triggers:
+      - uuid: 4fa3f42388644024838eb5e9b51532a7
+        expression: max(/Fortinet FG-1100E by SNMP/icmpping,#3)=0
+        name: Firewall is unreachable by ICMP
+        priority: HIGH
+        manual_close: 'YES'
+    - uuid: b9cae8a7d1e6480782b0c38c42a8958d
+      name: ICMP packet loss
+      type: SIMPLE
+      key: icmppingloss
+      delay: 1m
+      history: 7d
+      trends: 365d
+      value_type: FLOAT
+      units: '%'
+      tags:
+      - tag: component
+        value: health
+    - uuid: 6ba8149a21c6497196a3a8fb0d30f235
+      name: ICMP response time
+      type: SIMPLE
+      key: icmppingsec
+      delay: 1m
+      history: 7d
+      trends: 365d
+      value_type: FLOAT
+      units: s
+      tags:
+      - tag: component
+        value: health
+    - uuid: 87b350881eed47838e7eb39096bd785e
+      name: System description
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.1.1.0
+      key: system.descr[sysDescr.0]
+      delay: 1h
+      history: 7d
+      trends: '0'
+      value_type: TEXT
+      tags:
+      - tag: component
+        value: system
+    - uuid: c99120eea1d54e57944fa05bb2f877c2
+      name: System object ID
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.1.2.0
+      key: system.objectid[sysObjectID.0]
+      delay: 1h
+      history: 7d
+      trends: '0'
+      value_type: CHAR
+      tags:
+      - tag: component
+        value: system
+    - uuid: 9ffd196c1ab944baa2ed1f81da616102
+      name: System uptime
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.1.3.0
+      key: system.uptime[sysUpTime.0]
+      delay: 5m
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      units: uptime
+      tags:
+      - tag: component
+        value: system
+    - uuid: 965345640d1e48a8b72dcedbe2f3bff6
+      name: System contact
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.1.4.0
+      key: system.contact[sysContact.0]
+      delay: 1h
+      history: 7d
+      trends: '0'
+      value_type: CHAR
+      tags:
+      - tag: component
+        value: system
+    - uuid: f864224488da48c4a8e45b785dd06290
+      name: System name
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.1.5.0
+      key: system.name[sysName.0]
+      delay: 10m
+      history: 7d
+      trends: '0'
+      value_type: CHAR
+      tags:
+      - tag: component
+        value: system
+    - uuid: 2560b1293c8d420bba6776c5dac9b6dd
+      name: System location
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.1.6.0
+      key: system.location[sysLocation.0]
+      delay: 1h
+      history: 7d
+      trends: '0'
+      value_type: CHAR
+      tags:
+      - tag: component
+        value: system
+    discovery_rules:
+    - uuid: c37f0acf07674af39e4403d7cf8ebe5f
+      name: Network interfaces discovery
+      type: SNMP_AGENT
+      snmp_oid: discovery[{#IFNAME},1.3.6.1.2.1.31.1.1.1.1,{#IFDESCR},1.3.6.1.2.1.2.2.1.2,{#IFALIAS},1.3.6.1.2.1.31.1.1.1.18]
+      key: net.if.discovery
+      delay: 1h
+      lifetime: 7d
+      enabled_lifetime_type: DISABLE_NEVER
+      item_prototypes:
+      - uuid: ee6e17e26d4348148de95546ecd350c6
+        name: 'Interface {#IFNAME}: Administrative status'
+        type: SNMP_AGENT
+        snmp_oid: 1.3.6.1.2.1.2.2.1.7.{#SNMPINDEX}
+        key: net.if.admin[{#SNMPINDEX}]
+        delay: 1m
+        history: 7d
+        trends: 365d
+        value_type: UNSIGNED
+        valuemap:
+          name: Interface status
+        tags:
+        - tag: component
+          value: interface
+        - tag: interface
+          value: '{#IFNAME}'
+      - uuid: 95bf673a4fae47988903dce953f5db21
+        name: 'Interface {#IFNAME}: Operational status'
+        type: SNMP_AGENT
+        snmp_oid: 1.3.6.1.2.1.2.2.1.8.{#SNMPINDEX}
+        key: net.if.oper[{#SNMPINDEX}]
+        delay: 1m
+        history: 7d
+        trends: 365d
+        value_type: UNSIGNED
+        valuemap:
+          name: Interface status
+        tags:
+        - tag: component
+          value: interface
+        - tag: interface
+          value: '{#IFNAME}'
+        trigger_prototypes:
+        - uuid: 50285f53091141e29454280a8260a50a
+          expression: last(/Fortinet FG-1100E by SNMP/net.if.admin[{#SNMPINDEX}])=1 and last(/Fortinet FG-1100E by SNMP/net.if.oper[{#SNMPINDEX}])<>1
+          name: Interface {#IFNAME} is down
+          priority: AVERAGE
+          manual_close: 'YES'
+      - uuid: f1c5e0207c584c99af311f7ac9c628fb
+        name: 'Interface {#IFNAME}: Speed'
+        type: SNMP_AGENT
+        snmp_oid: 1.3.6.1.2.1.31.1.1.1.15.{#SNMPINDEX}
+        key: net.if.speed[{#SNMPINDEX}]
+        delay: 5m
+        history: 7d
+        trends: 365d
+        value_type: UNSIGNED
+        units: Mbps
+        tags:
+        - tag: component
+          value: interface
+        - tag: interface
+          value: '{#IFNAME}'
+      - uuid: 40d5a4aea1844b03bb27f5dd255e0544
+        name: 'Interface {#IFNAME}: Bits received'
+        type: SNMP_AGENT
+        snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.{#SNMPINDEX}
+        key: net.if.in[{#SNMPINDEX}]
+        delay: 1m
+        history: 7d
+        trends: 365d
+        value_type: UNSIGNED
+        units: bps
+        preprocessing:
+        - type: CHANGE_PER_SECOND
+        - type: MULTIPLIER
+          parameters:
+          - '8'
+        tags:
+        - tag: component
+          value: interface
+        - tag: interface
+          value: '{#IFNAME}'
+      - uuid: 7fc16d788f9b4326b08cb1b539a23b51
+        name: 'Interface {#IFNAME}: Bits sent'
+        type: SNMP_AGENT
+        snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.{#SNMPINDEX}
+        key: net.if.out[{#SNMPINDEX}]
+        delay: 1m
+        history: 7d
+        trends: 365d
+        value_type: UNSIGNED
+        units: bps
+        preprocessing:
+        - type: CHANGE_PER_SECOND
+        - type: MULTIPLIER
+          parameters:
+          - '8'
+        tags:
+        - tag: component
+          value: interface
+        - tag: interface
+          value: '{#IFNAME}'
+      - uuid: 439f4729b9b84fc4907681e27af68ac8
+        name: 'Interface {#IFNAME}: Inbound errors'
+        type: SNMP_AGENT
+        snmp_oid: 1.3.6.1.2.1.2.2.1.14.{#SNMPINDEX}
+        key: net.if.in.errors[{#SNMPINDEX}]
+        delay: 1m
+        history: 7d
+        trends: 365d
+        value_type: UNSIGNED
+        units: pps
+        preprocessing:
+        - type: CHANGE_PER_SECOND
+        tags:
+        - tag: component
+          value: interface
+        - tag: interface
+          value: '{#IFNAME}'
+      - uuid: 61127c5d02d54fb0ac3678002fe85ee1
+        name: 'Interface {#IFNAME}: Outbound errors'
+        type: SNMP_AGENT
+        snmp_oid: 1.3.6.1.2.1.2.2.1.20.{#SNMPINDEX}
+        key: net.if.out.errors[{#SNMPINDEX}]
+        delay: 1m
+        history: 7d
+        trends: 365d
+        value_type: UNSIGNED
+        units: pps
+        preprocessing:
+        - type: CHANGE_PER_SECOND
+        tags:
+        - tag: component
+          value: interface
+        - tag: interface
+          value: '{#IFNAME}'
+      - uuid: 5d43782d6624453e95baf9021eff0c19
+        name: 'Interface {#IFNAME}: Inbound discards'
+        type: SNMP_AGENT
+        snmp_oid: 1.3.6.1.2.1.2.2.1.13.{#SNMPINDEX}
+        key: net.if.in.discards[{#SNMPINDEX}]
+        delay: 1m
+        history: 7d
+        trends: 365d
+        value_type: UNSIGNED
+        units: pps
+        preprocessing:
+        - type: CHANGE_PER_SECOND
+        tags:
+        - tag: component
+          value: interface
+        - tag: interface
+          value: '{#IFNAME}'
+      - uuid: eeae06a7e01242f08331c34c29416a87
+        name: 'Interface {#IFNAME}: Outbound discards'
+        type: SNMP_AGENT
+        snmp_oid: 1.3.6.1.2.1.2.2.1.19.{#SNMPINDEX}
+        key: net.if.out.discards[{#SNMPINDEX}]
+        delay: 1m
+        history: 7d
+        trends: 365d
+        value_type: UNSIGNED
+        units: pps
+        preprocessing:
+        - type: CHANGE_PER_SECOND
+        tags:
+        - tag: component
+          value: interface
+        - tag: interface
+          value: '{#IFNAME}'
+      graph_prototypes:
+      - uuid: 4e8e32a7cb684d8f8f95723bc3a80701
+        name: 'Interface {#IFNAME}: Traffic'
+        graph_items:
+        - color: 1A7C11
+          item:
+            host: Fortinet FG-1100E by SNMP
+            key: net.if.in[{#SNMPINDEX}]
+        - sortorder: '1'
+          color: 2774A4
+          item:
+            host: Fortinet FG-1100E by SNMP
+            key: net.if.out[{#SNMPINDEX}]
+      - uuid: 462c73d1c7b84f8fa5f31ead58bbb20f
+        name: 'Interface {#IFNAME}: Errors and discards'
+        graph_items:
+        - color: F63100
+          item:
+            host: Fortinet FG-1100E by SNMP
+            key: net.if.in.errors[{#SNMPINDEX}]
+        - sortorder: '1'
+          color: A54F10
+          item:
+            host: Fortinet FG-1100E by SNMP
+            key: net.if.out.errors[{#SNMPINDEX}]
+        - sortorder: '2'
+          color: 7554A1
+          item:
+            host: Fortinet FG-1100E by SNMP
+            key: net.if.in.discards[{#SNMPINDEX}]
+        - sortorder: '3'
+          color: E075C7
+          item:
+            host: Fortinet FG-1100E by SNMP
+            key: net.if.out.discards[{#SNMPINDEX}]
+    tags:
+    - tag: class
+      value: network
+    - tag: target
+      value: firewall
+    - tag: vendor
+      value: Fortinet
+    - tag: model
+      value: FG-1100E
+    valuemaps:
+    - uuid: 8884e2f00f004fb79d46cff6292dc620
+      name: Interface status
+      mappings:
+      - value: '1'
+        newvalue: up
+      - value: '2'
+        newvalue: down
+      - value: '3'
+        newvalue: testing
+      - value: '4'
+        newvalue: unknown
+      - value: '5'
+        newvalue: dormant
+      - value: '6'
+        newvalue: notPresent
+      - value: '7'
+        newvalue: lowerLayerDown
