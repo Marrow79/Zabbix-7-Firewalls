@@ -1,0 +1,18 @@
+Zabbix 7 Firewall SNMP Template Pack Validation
+Generated: 2026-09-28
+UUIDv4 correction: 2026-09-28
+Model-specific YAML files: 511
+Combined YAML files: 1
+Total YAML files: 512
+Combined templates: 511
+UUID field occurrences checked across all YAML files: 26062
+Distinct UUID values across package: 12776
+Distinct non-v4 UUID values remapped to UUIDv4: 12775
+UUID field occurrences replaced: 25550
+Malformed UUID count after correction: 0
+Non-UUIDv4 count after correction: 0
+YAML parse/structure errors: 0
+YAML files with duplicate UUID values: 0
+ZIP integrity: tested after archive creation
+RESULT: PASS - all UUID fields are RFC 4122 UUIDv4 and YAML parsing/structure checks passed.
+NOTE: No live Zabbix server was available for frontend/API import testing.
